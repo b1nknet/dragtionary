@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "드래그 사전 & 번역기",
+  "version": "1.0.0",
+  "description": "웹페이지에서 선택한 단어는 사전으로 찾고, 문장은 원하는 언어로 번역합니다.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://api.dictionaryapi.dev/*",
+    "https://api.mymemory.translated.net/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "드래그 사전 & 번역기 설정",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

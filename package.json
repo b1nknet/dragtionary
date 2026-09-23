@@ -1,0 +1,9 @@
+{
+  "name": "drag-dictionary-translator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "텍스트 선택 기반 Chrome 사전 및 번역 확장 프로그램",
+  "scripts": {
+    "test": "node tests/background.test.cjs && node --check content.js && node --check popup.js"
+  }
+}
