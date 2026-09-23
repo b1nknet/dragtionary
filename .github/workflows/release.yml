@@ -1,0 +1,46 @@
+name: Release Chrome extension
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Verify source
+        run: npm test
+
+      - name: Verify tag matches manifest version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node -e "const manifest = require('./manifest.json'); const tag = process.env.RELEASE_TAG.replace(/^v/, ''); if (manifest.version !== tag) { console.error('Version mismatch: manifest=' + manifest.version + ', tag=' + tag); process.exit(1); }"
+
+      - name: Package extension
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          files=(manifest.json background.js content.js content.css popup.html popup.css popup.js)
+          if [ -d icons ]; then files+=(icons); fi
+          zip -r "dist/dragtionary-${RELEASE_TAG}.zip" "${files[@]}"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            "dist/dragtionary-${RELEASE_TAG}.zip" \
+            --title "Dragtionary ${RELEASE_TAG}" \
+            --generate-notes \
+            --verify-tag
